@@ -1,0 +1,24 @@
+name: Post coverage comment
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  test:
+    name: Display coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v3
+        id: download
+        with:
+          name: coverage
+
+      - name: Post comment
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
+          VERBOSE: true
