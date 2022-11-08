@@ -1,6 +1,9 @@
 name: Python tests
 
-on: [push]
+on:
+  push:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize, edited]
 
 jobs:
 
@@ -50,10 +53,10 @@ jobs:
           name: coverage
           path: .coverage
 
-  update-readme:
-    name: Update Coverage
+  update-coverage-badge:
     needs: build
     runs-on: ubuntu-18.04
+    if: ${{ github.event_name == 'pull_request' }}
 
     steps:
       - uses: actions/checkout@v2
