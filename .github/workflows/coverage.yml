@@ -20,7 +20,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          checks-name: 'Store coverage file'
+          running-workflow-name: 'Python tests'
           wait-interval: 10
 
       - name: Download artifact
@@ -40,12 +40,12 @@ jobs:
           COMMENT_TEMPLATE: '
             {% extends "base" %}
             {% block coverage_by_file %}
+            {{ super() }}
             <details>
             <summary>Full Coverage Report (click to unfold)</summary>
             {% for file_coverage in coverage.files.values() %}
             {{ file_coverage.path }}: {{ ((file_coverage.info.percent_covered * 100)|int) }}%<br>
             {% endfor %}
             </details>
-            {{ super() }}
             {% endblock coverage_by_file %}
           '
