@@ -1,6 +1,9 @@
 name: Python tests
 
-on: [push]
+on:
+  push:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
 
 jobs:
 
@@ -50,10 +53,10 @@ jobs:
           name: coverage
           path: .coverage
 
-  update-readme:
-    name: Update Coverage
+  update-coverage-info:
     needs: build
     runs-on: ubuntu-18.04
+    if: ${{ github.event_name == 'pull_request' }}
 
     steps:
       - uses: actions/checkout@v2
@@ -70,7 +73,7 @@ jobs:
         uses: tj-actions/coverage-badge-py@v1.8
 
       - name: Move coverage badge to images folder
-        run: mv coverage.svg .github/images
+        run: cp coverage.svg .github/images
 
       - name: Verify Changed files
         uses: tj-actions/verify-changed-files@v9
@@ -92,3 +95,21 @@ jobs:
         with:
           github_token: ${{ secrets.github_token }}
           branch: ${{ github.ref }}
+
+      - name: Post comment
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
+          COMMENT_TEMPLATE: '
+            {% extends "base" %}
+            {% block coverage_by_file %}
+            {{ super() }}
+            <details>
+            <summary>Full Coverage Report (click to unfold)</summary>
+            {% for file_coverage in coverage.files.values() %}
+            {{ file_coverage.path }}: {{ ((file_coverage.info.percent_covered * 100)|int) }}%<br>
+            {% endfor %}
+            </details>
+            {% endblock coverage_by_file %}
+          '
