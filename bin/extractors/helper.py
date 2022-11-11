@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__author__ = "Slavomir Mazur"
-__copyright__ = "Copyright The IETF Trust 2021, All Rights Reserved"
-__license__ = "Apache License, Version 2.0"
-__email__ = "slavomir.mazur@pantheon.tech"
+__author__ = 'Slavomir Mazur'
+__copyright__ = 'Copyright The IETF Trust 2021, All Rights Reserved'
+__license__ = 'Apache License, Version 2.0'
+__email__ = 'slavomir.mazur@pantheon.tech'
 
 
 import glob
@@ -40,8 +40,8 @@ def invert_yang_modules_dict(in_dict: dict, debug_level: int = 0):
         print('DEBUG: invert_yang_modules_dict: dictionary before inversion:\n{}'.format(str(in_dict)))
 
     inv_dict = {}
-    for key in in_dict.keys():
-        for yang_model in in_dict[key]:
+    for key, yang_modules in in_dict.items():
+        for yang_model in yang_modules:
             inv_dict[yang_model] = key
 
     if debug_level > 0:

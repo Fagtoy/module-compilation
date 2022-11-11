@@ -19,19 +19,21 @@ __email__ = 'slavomir.mazur@pantheon.tech'
 
 import glob
 import os
+from configparser import ConfigParser
 
 from create_config import create_config
 
 
 class ConfdcParser:
-    def __init__(self, debug_level: int = 0):
-        self._config = create_config()
-        self._confdc_exec = self._config.get('Tool-Section', 'confdc-exec')
-        self._modules_directory = self._config.get('Directory-Section', 'modules-directory')
+    def __init__(self, debug_level: int = 0, config: ConfigParser = create_config()):
+        self._confdc_exec = config.get('Tool-Section', 'confdc-exec')
+        self._modules_directory = config.get('Directory-Section', 'modules-directory')
 
         self._debug_level = debug_level
         self._symlink_paths = self.get_symlink_paths()
-        self._tail_warning = '-w TAILF_MUST_NEED_DEPENDENCY'  # Treat ErrorCode as a warning, even if --fail-onwarnings is given
+        self._tail_warning = (
+            '-w TAILF_MUST_NEED_DEPENDENCY'  # Treat ErrorCode as a warning, even if --fail-onwarnings is given
+        )
 
     def run_confdc(self, yang_file_path: str, rootdir: str, allinclusive: bool = False):
         """

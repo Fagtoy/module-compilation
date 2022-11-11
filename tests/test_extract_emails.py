@@ -25,10 +25,9 @@ import extract_emails as ee
 
 
 class TestExtractElem(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.resource_path = os.path.join(os.environ['VIRTUAL_ENV'], 'tests/resources/extract_emails')
+    @classmethod
+    def setUpClass(cls):
+        cls.resource_path = os.path.join(os.environ['VIRTUAL_ENV'], 'tests/resources/extract_emails')
 
     def test_extract_emails(self):
         result = ee.extract_email_string(os.path.join(self.resource_path, 'emails.txt'), 'foo.com')
@@ -37,6 +36,7 @@ class TestExtractElem(unittest.TestCase):
     def test_list_of_ietf_drafts(self):
         result = ee.list_of_ietf_drafts(os.path.join(self.resource_path, 'drafts'))
         self.assertSetEqual(set(result), {'draft-foo.txt', 'draft-bar.txt'})
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -18,19 +18,18 @@ __copyright__ = 'Copyright The IETF Trust 2022, All Rights Reserved'
 __license__ = 'Apache License, Version 2.0'
 __email__ = 'richard.zilincik@pantheon.tech'
 
-import unittest
 import os
+import unittest
 
 import utility.utility as u
 from create_config import create_config
 
 
 class TestUtility(unittest.TestCase):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.resource_path = os.path.join(os.environ['VIRTUAL_ENV'], 'tests/resources/utility')
-        self.config = create_config(os.path.join(os.path.dirname(self.resource_path), 'test.conf'))
+    @classmethod
+    def setUpClass(cls):
+        cls.resource_path = os.path.join(os.environ['VIRTUAL_ENV'], 'tests/resources/utility')
+        cls.config = create_config(os.path.join(os.path.dirname(cls.resource_path), 'test.conf'))
 
     def test_module_or_submodule(self):
         result = u.module_or_submodule(os.path.join(self.resource_path, 'module_or_submodule/module.yang'))
@@ -95,9 +94,9 @@ class TestUtility(unittest.TestCase):
                 'foo': ['test', 'stuff', 'PASSED', 'more stuff'],
                 'bar': ['test', 'stuff', 'FAILED', 'more stuff'],
                 'foobar': ['test', 'stuff', 'PASSED WITH WARNINGS', 'more stuff'],
-                'boofar': ['test', 'stuff', 'PASSED', 'more stuff']
+                'boofar': ['test', 'stuff', 'PASSED', 'more stuff'],
             },
             2,
-            'PASSED'
+            'PASSED',
         )
         self.assertEqual(result, 2)

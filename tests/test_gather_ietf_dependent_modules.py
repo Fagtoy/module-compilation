@@ -29,24 +29,25 @@ from gather_ietf_dependent_modules import copy_modules
 
 
 class TestGatherIetfDependentModules(unittest.TestCase):
+    resource_path: str
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
         config = create_config()
-        self.resource_path = os.path.join(os.environ['VIRTUAL_ENV'], 'tests/resources/gather_ietf_dependent_modules')
-        self.yangcatalog_api_prefix = config.get('Web-Section', 'yangcatalog-api-prefix')
-        self.ietf_dependencies_dir = os.path.join(self.resource_path, 'dependencies')
-        self.payloads_file = os.path.join(self.resource_path, 'payloads.json')
+        cls.resource_path = os.path.join(os.environ['VIRTUAL_ENV'], 'tests/resources/gather_ietf_dependent_modules')
+        cls.yangcatalog_api_prefix = config.get('Web-Section', 'yangcatalog-api-prefix')
+        cls.ietf_dependencies_dir = os.path.join(cls.resource_path, 'dependencies')
+        payloads_file = os.path.join(cls.resource_path, 'payloads.json')
+        with open(payloads_file, 'r', encoding='utf-8') as reader:
+            cls.payloads_file_content = json.load(reader)
 
-    def setUp(self) -> None:
+    def setUp(self):
         shutil.rmtree(self.ietf_dependencies_dir, ignore_errors=True)
 
     @mock.patch('requests.post')
     def test_copy_modules(self, mock_post: mock.MagicMock) -> None:
-        """ Test whether the yang files have been copied to the destination directory. """
-        with open(self.payloads_file, 'r', encoding='utf-8') as reader:
-            content = json.load(reader)
-        mock_post.return_value.json.return_value = content['search-filter-ietf']
+        """Test whether the yang files have been copied to the destination directory."""
+        mock_post.return_value.json.return_value = self.payloads_file_content['search-filter-ietf']
         src_dir = os.path.join(self.resource_path, 'all_modules')
         copied_modules = copy_modules(self.yangcatalog_api_prefix, src_dir, self.ietf_dependencies_dir)
 
@@ -58,10 +59,8 @@ class TestGatherIetfDependentModules(unittest.TestCase):
 
     @mock.patch('requests.post')
     def test_copy_modules_no_src_dir(self, mock_post: mock.MagicMock) -> None:
-        """ Destination directory should be empty if the source directory does not exist. """
-        with open(self.payloads_file, 'r', encoding='utf-8') as reader:
-            content = json.load(reader)
-        mock_post.return_value.json.return_value = content['search-filter-ietf']
+        """Destination directory should be empty if the source directory does not exist."""
+        mock_post.return_value.json.return_value = self.payloads_file_content['search-filter-ietf']
         src_dir = os.path.join(self.resource_path, 'non_existing_dir')
         copied_modules = copy_modules(self.yangcatalog_api_prefix, src_dir, self.ietf_dependencies_dir)
 
@@ -71,10 +70,8 @@ class TestGatherIetfDependentModules(unittest.TestCase):
 
     @mock.patch('requests.post')
     def test_copy_modules_400_response(self, mock_post: mock.MagicMock) -> None:
-        """ Destination directory should be empty if server responded with 400/404 error message. """
-        with open(self.payloads_file, 'r', encoding='utf-8') as reader:
-            content = json.load(reader)
-        mock_post.return_value.json.return_value = content['search-filter-ietf-400-response']
+        """Destination directory should be empty if server responded with 400/404 error message."""
+        mock_post.return_value.json.return_value = self.payloads_file_content['search-filter-ietf-400-response']
         src_dir = os.path.join(self.resource_path, 'all_modules')
         copied_modules = copy_modules(self.yangcatalog_api_prefix, src_dir, self.ietf_dependencies_dir)
 

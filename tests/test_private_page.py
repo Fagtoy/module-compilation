@@ -18,25 +18,25 @@ __copyright__ = 'Copyright The IETF Trust 2022, All Rights Reserved'
 __license__ = 'Apache License, Version 2.0'
 __email__ = 'richard.zilincik@pantheon.tech'
 
-import unittest
 import os
+import unittest
 
 import private_page as pp
 
-class TestPrivatePage(unittest.TestCase):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.resources = os.path.join(os.environ['VIRTUAL_ENV'], 'tests/resources/private_page')
-    
+class TestPrivatePage(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.resources = os.path.join(os.environ['VIRTUAL_ENV'], 'tests/resources/private_page')
+
     def resource(self, file: str):
         return os.path.join(self.resources, file)
 
     def test_get_vendor_context(self):
         result = pp.get_vendor_context(
             self.resource('vendor'),
-            lambda os_name, os_specific_dir: pp.alnum('{}{}'.format(os_name, os_specific_dir)),
-            lambda os_name, os_specific_dir: '{}{}'.format(os_name, os_specific_dir)
+            lambda os_name, os_specific_dir: pp.alnum(f'{os_name}{os_specific_dir}'),
+            lambda os_name, os_specific_dir: f'{os_name}{os_specific_dir}',
         )
 
         expected = [{'allCharacters': i, 'alphaNumeric': pp.alnum(i)} for i in ['bar1.0', 'foo1.0', 'foo1.1', 'foo1.2']]
@@ -45,14 +45,14 @@ class TestPrivatePage(unittest.TestCase):
     def test_get_vendor_context_separate(self):
         result = pp.get_vendor_context(
             self.resource('vendor'),
-            lambda os_name, os_specific_dir: pp.alnum('{}{}'.format(os_name, os_specific_dir)),
-            lambda os_name, os_specific_dir: '{}{}'.format(os_name, os_specific_dir),
-            separate=True
+            lambda os_name, os_specific_dir: pp.alnum(f'{os_name}{os_specific_dir}'),
+            lambda os_name, os_specific_dir: f'{os_name}{os_specific_dir}',
+            separate=True,
         )
 
         expected = {
             'BAR': [{'allCharacters': i, 'alphaNumeric': pp.alnum(i)} for i in ['bar1.0']],
-            'FOO': [{'allCharacters': i, 'alphaNumeric': pp.alnum(i)} for i in ['foo1.0', 'foo1.1', 'foo1.2']]
+            'FOO': [{'allCharacters': i, 'alphaNumeric': pp.alnum(i)} for i in ['foo1.0', 'foo1.1', 'foo1.2']],
         }
         assert isinstance(result, dict)
         self.assertDictEqual(result, expected)
@@ -60,10 +60,11 @@ class TestPrivatePage(unittest.TestCase):
     def test_get_etsi_context(self):
         result = pp.get_etsi_context(self.resource('etsi'))
 
-        expected = [{'allCharacters': i.strip('NFV-SOL006-v'), 'alphaNumeric': pp.alnum(i.strip('NFV-SOL006-v'))}
-                    for i in ['NFV-SOL006-v2.6.1', 'NFV-SOL006-v2.7.1', 'NFV-SOL006-v2.8.1']]
+        expected = [
+            {'allCharacters': i.strip('NFV-SOL006-v'), 'alphaNumeric': pp.alnum(i.strip('NFV-SOL006-v'))}
+            for i in ['NFV-SOL006-v2.6.1', 'NFV-SOL006-v2.7.1', 'NFV-SOL006-v2.8.1']
+        ]
         self.assertEqual(result, expected)
-
 
     def test_get_openroadm_context(self):
         result = pp.get_openroadm_context(['bar1.0', 'foo1.0', 'foo1.1', 'foo1.2'])

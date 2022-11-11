@@ -27,19 +27,18 @@ import yang_version_1_1 as yv11
 
 
 class TestYangVersion11(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.resource_path = os.path.join(os.environ['VIRTUAL_ENV'], 'tests/resources/yang_version_1_1')
+        cls.script_path = os.path.join(os.environ['VIRTUAL_ENV'], 'bin/yang_version_1_1.py')
+        cls.src = os.path.join(cls.resource_path, 'YANG')
+        cls.dst = os.path.join(cls.resource_path, 'YANG-v11')
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.resource_path = os.path.join(os.environ['VIRTUAL_ENV'], 'tests/resources/yang_version_1_1')
-        self.script_path = os.path.join(os.environ['VIRTUAL_ENV'], 'bin/yang_version_1_1.py')
-        self.src = os.path.join(self.resource_path, 'YANG')
-        self.dst = os.path.join(self.resource_path, 'YANG-v11')
-
-    def setUp(self) -> None:
+    def setUp(self):
         shutil.rmtree(self.dst, ignore_errors=True)
 
     def test_yang_version_1_1(self):
-        """ Find and copy the yang files that contain 'yang-version 1.1' string. """
+        """Find and copy the yang files that contain 'yang-version 1.1' string."""
         result = yv11.find_v11_models(self.src, self.dst, 1)
         self.assertNotEqual(result, [])
         self.assertIn('test.yang', result)
@@ -50,13 +49,13 @@ class TestYangVersion11(unittest.TestCase):
         self.assertIn('test.yang', v1_files)
 
     def test_yang_version_1_1_src_not_exists(self):
-        """ Test the case when the src directory does not exist. """
+        """Test the case when the src directory does not exist."""
         result = yv11.find_v11_models('', self.dst)
         self.assertEqual(result, [])
 
     def test_yang_version_1_1_from_console(self):
-        """ Run the script from the console by passing the arguments. """
-        bash_command = 'python {} --srcpath {} --dstpath {} --debug 1'.format(self.script_path, self.src, self.dst)
+        """Run the script from the console by passing the arguments."""
+        bash_command = f'python {self.script_path} --srcpath {self.src} --dstpath {self.dst} --debug 1'
         subprocess.run(bash_command, shell=True, capture_output=True, check=False).stdout.decode()
 
         v1_files = os.listdir(self.dst)

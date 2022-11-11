@@ -18,12 +18,13 @@ __license__ = 'Apache License, Version 2.0'
 __email__ = 'slavomir.mazur@pantheon.tech'
 
 import os
+from configparser import ConfigParser
 
 from create_config import create_config
 
 
 def _remove_duplicate_messages(result: str) -> str:
-    """ Same result messages are often found in the compilation result multiple times.
+    """Same result messages are often found in the compilation result multiple times.
     This method filter out duplicate messages.
     """
     splitted_result = result.split('\n\n')
@@ -34,9 +35,8 @@ def _remove_duplicate_messages(result: str) -> str:
 
 
 class YanglintParser:
-    def __init__(self, debug_level: int = 0):
-        self._config = create_config()
-        self._modules_directory = self._config.get('Directory-Section', 'modules-directory')
+    def __init__(self, debug_level: int = 0, config: ConfigParser = create_config()):
+        self._modules_directory = config.get('Directory-Section', 'modules-directory')
 
         self._debug_level = debug_level
         self._yanglint_exec = 'yanglint'
