@@ -243,9 +243,8 @@ class DraftExtractor:
             json.dump(self.drafts_missing_code_section, writer)
 
     def _send_email_about_new_problematic_drafts(self, old_incorrect_drafts: t.Iterable[str]):
+        print(old_incorrect_drafts)
         for draft_filename, errors_string in self.drafts_missing_code_section.items():
-            if draft_filename in old_incorrect_drafts:
-                continue
             draft_name_without_revision = re.sub(r'-\d+', '', draft_filename.split('.')[0])
             author_email = f'{draft_name_without_revision}@ietf.org'
             self.message_factory.send_problematic_draft(

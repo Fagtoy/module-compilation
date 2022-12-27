@@ -19,13 +19,11 @@ __email__ = 'bclaise@cisco.com, evyncke@cisco.com'
 
 import argparse
 import datetime
-import json
 import os
 import time
 
 from create_config import create_config
 from extractors.draft_extractor import DraftExtractor
-from extractors.rfc_extractor import RFCExtractor
 from job_log import JobLogStatuses, job_log
 from remove_directory_content import remove_directory_content
 
@@ -41,8 +39,6 @@ def main():
     config = create_config()
     ietf_directory = config.get('Directory-Section', 'ietf-directory')
     draft_path = config.get('Directory-Section', 'ietf-drafts')
-    rfc_path = config.get('Directory-Section', 'ietf-rfcs')
-    cache_directory = config.get('Directory-Section', 'cache')
     temp_dir = config.get('Directory-Section', 'temp')
     public_directory = config.get('Web-Section', 'public-directory')
     send_emails_about_problematic_drafts = (
@@ -166,13 +162,6 @@ def main():
     ]:
         remove_directory_content(dir, debug_level)
 
-    # Extract YANG models from IETF RFCs files
-    rfc_extractor = RFCExtractor(rfc_path, args.rfcyangpath, args.rfcextractionyangpath, debug_level)
-    rfc_extractor.extract()
-    rfc_extractor.clean_old_rfc_yang_modules(args.rfcyangpath, args.yangexampleoldrfcpath)
-    custom_print('Old examples YANG modules moved')
-    custom_print('All IETF RFCs pre-processed')
-
     # Extract YANG models from IETF draft files
     draft_extractor = DraftExtractor(draft_extractor_paths, debug_level)
     draft_extractor.extract()
@@ -181,16 +170,6 @@ def main():
         send_emails_about_problematic_drafts=send_emails_about_problematic_drafts,
     )
     custom_print('All IETF Drafts pre-processed')
-
-    # Dump dicts for later use by compile_modules.py
-    with open(os.path.join(cache_directory, 'rfc_dict.json'), 'w') as f:
-        json.dump(rfc_extractor.inverted_rfc_yang_dict, f)
-
-    with open(os.path.join(cache_directory, 'draft_dict.json'), 'w') as f:
-        json.dump(draft_extractor.inverted_draft_yang_dict, f)
-
-    with open(os.path.join(cache_directory, 'example_dict.json'), 'w') as f:
-        json.dump(draft_extractor.inverted_draft_yang_example_dict, f)
 
     custom_print(f'end of {os.path.basename(__file__)} job')
     job_log(start_time, int(time.time()), temp_dir, file_basename, status=JobLogStatuses.SUCCESS)

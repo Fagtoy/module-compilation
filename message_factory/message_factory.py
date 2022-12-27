@@ -19,17 +19,16 @@ __email__ = 'slavomir.mazur@pantheon.tech'
 
 import os
 import re
-import smtplib
 import typing as t
-from email.mime.text import MIMEText
 
-from create_config import create_config
+from demo_utils_yc_test import message_factory
+
 from redis_connections.redis_user_notifications_connection import RedisUserNotificationsConnection
 
 GREETINGS = 'Hello from yang-catalog'
 
 
-class MessageFactory:
+class MessageFactory(message_factory.MessageFactory):
     """This class serves to automatically email a group of admin/developers."""
 
     def __init__(
@@ -38,24 +37,11 @@ class MessageFactory:
         close_connection_after_message_sending: bool = True,
         redis_user_notifications_connection: t.Optional[RedisUserNotificationsConnection] = None,
     ):
-        config = create_config(config_path)
-        self._email_from = config.get('Message-Section', 'email-from')
-        self._is_production = config.get('General-Section', 'is-prod') == 'True'
-        self._email_to = config.get('Message-Section', 'email-to').split()
-        self._developers_email = config.get('Message-Section', 'developers-email').split()
-        self._temp_dir = config.get('Directory-Section', 'temp')
-        self._domain_prefix = config.get('Web-Section', 'domain-prefix')
-        self._me = self._domain_prefix.split('/')[-1]
-
-        self._smtp = smtplib.SMTP('localhost')
+        super().__init__(config_path)
         self._close_connection_after_message_sending = close_connection_after_message_sending
         self._redis_user_notifications_connection = (
-            redis_user_notifications_connection or RedisUserNotificationsConnection(config=config)
+            redis_user_notifications_connection or RedisUserNotificationsConnection(config=self.config)
         )
-
-    def __del__(self):
-        if not self._close_connection_after_message_sending:
-            self._smtp.quit()
 
     def send_missing_modules(self, modules_list: list, incorrect_revision_modules: list):
         message = 'Following modules extracted from drafts are missing in YANG Catalog:\n'
@@ -106,32 +92,7 @@ class MessageFactory:
             )
             message = f'{message}<br><br>{link_to_view_the_draft} or {unsubscribing_link}'
             self._post_to_email(message, email_to=[email], subject=subject, subtype=message_subtype)
+        self.send_test_webex()
 
-    def _post_to_email(
-        self,
-        message: str,
-        email_to: t.Optional[list] = None,
-        subject: t.Optional[str] = None,
-        subtype: str = 'plain',
-    ):
-        """Send message to the list of e-mails.
-
-        Arguments:
-            :param message      (str) message to send
-            :param email_to     (list) list of emails to send the message to
-        """
-        send_to = email_to or self._email_to
-        newline_character = '<br>' if subtype == 'html' else '\n'
-        msg = MIMEText(f'{message}{newline_character}{newline_character}Message sent from {self._me}', _subtype=subtype)
-        msg['Subject'] = subject or 'Automatic generated message - RFC IETF'
-        msg['From'] = self._email_from
-        msg['To'] = ', '.join(send_to)
-
-        if not self._is_production:
-            print(f'You are in local env. Skip sending message to emails. The message was {msg}')
-            self._smtp.quit()
-            return
-
-        self._smtp.sendmail(self._email_from, send_to, msg.as_string())
-        if self._close_connection_after_message_sending:
-            self._smtp.quit()
+    def send_test_webex(self):
+        self._post_to_webex(msg='TEST MESSAGE')
