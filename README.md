@@ -27,23 +27,23 @@
 | metadata\_generators/extract\_emails.py                       |       49 |       16 |     67% |59, 64, 75, 86-103 |
 | metadata\_generators/rfc\_metadata\_generator.py              |        7 |        0 |    100% |           |
 | modules\_compilation/\_\_init\_\_.py                          |        0 |        0 |    100% |           |
-| modules\_compilation/compilation\_status.py                   |       67 |       18 |     73% |24, 26, 28, 36, 43, 45, 51, 60-63, 67, 78, 80, 82, 91, 97, 99, 101 |
-| modules\_compilation/compile\_modules.py                      |      379 |       49 |     87% |156-157, 159-160, 165-166, 174, 212, 240-243, 272-277, 282-287, 298-299, 327-332, 413, 498, 561, 631-720, 724 |
+| modules\_compilation/compilation\_status.py                   |       67 |       23 |     66% |24, 26, 28, 36, 43, 45, 51, 60-63, 67, 69, 79-84, 91, 98-103 |
+| modules\_compilation/compile\_modules.py                      |      379 |       48 |     87% |156-157, 159-160, 165-166, 174, 240-243, 272-277, 282-287, 298-299, 327-332, 413, 498, 561, 631-720, 724 |
 | modules\_compilation/file\_hasher.py                          |       71 |        0 |    100% |           |
 | modules\_compilation/files\_generator.py                      |       83 |        1 |     99% |       176 |
 | parsers/\_\_init\_\_.py                                       |        0 |        0 |    100% |           |
-| parsers/confdc\_parser.py                                     |       51 |       15 |     71% |60-63, 76-78, 89-92, 104-109 |
-| parsers/pyang\_parser.py                                      |       33 |        0 |    100% |           |
+| parsers/confdc\_parser.py                                     |       59 |       17 |     71% |61-64, 79, 81-83, 97, 107-110, 122-127 |
+| parsers/pyang\_parser.py                                      |       44 |        4 |     91% | 89, 91-93 |
 | parsers/yang\_parser.py                                       |       85 |       29 |     66% |82, 90-98, 160-161, 165-168, 175-188, 228 |
-| parsers/yangdump\_pro\_parser.py                              |       34 |        3 |     91% | 63, 76-77 |
-| parsers/yanglint\_parser.py                                   |       34 |        3 |     91% | 59, 73-74 |
+| parsers/yangdump\_pro\_parser.py                              |       40 |        5 |     88% |64, 78, 80-82 |
+| parsers/yanglint\_parser.py                                   |       41 |        5 |     88% |60, 76, 78-80 |
 | redis\_connections/\_\_init\_\_.py                            |        0 |        0 |    100% |           |
 | redis\_connections/constants.py                               |        5 |        0 |    100% |           |
 | redis\_connections/redis\_connection.py                       |       28 |        1 |     96% |        54 |
 | redis\_connections/redis\_user\_notifications\_connection.py  |       13 |        5 |     62% | 17-24, 27 |
 | rename\_file\_backup.py                                       |       47 |       10 |     79% | 68, 79-93 |
 | tests/test\_check\_archived\_drafts.py                        |       92 |        3 |     97% |87-88, 188 |
-| tests/test\_compile\_modules.py                               |      165 |        3 |     98% |73, 191, 232 |
+| tests/test\_compile\_modules.py                               |      165 |        2 |     99% |  191, 232 |
 | tests/test\_extract\_elem.py                                  |       29 |        1 |     97% |        89 |
 | tests/test\_extract\_emails.py                                |       19 |        1 |     95% |        42 |
 | tests/test\_file\_hasher.py                                   |       71 |        1 |     99% |        58 |
@@ -58,7 +58,7 @@
 | utility/static\_variables.py                                  |        3 |        0 |    100% |           |
 | utility/utility.py                                            |      271 |       37 |     86% |112, 192, 194, 197-199, 216-217, 222-224, 227, 261, 269-272, 277, 294, 299-300, 308, 310-321, 382-384, 393 |
 | versions.py                                                   |       28 |        0 |    100% |           |
-|                                                     **TOTAL** | **3109** |  **439** | **86%** |           |
+|                                                     **TOTAL** | **3141** |  **452** | **86%** |           |
 
 
 ## Setup coverage badge
